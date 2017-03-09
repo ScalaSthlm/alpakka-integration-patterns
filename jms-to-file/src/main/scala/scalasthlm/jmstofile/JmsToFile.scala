@@ -1,7 +1,8 @@
 
 package scalasthlm.jmstofile
-
+// #imports
 import java.nio.file.Paths
+import javax.jms.{Message, TextMessage}
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -14,6 +15,7 @@ import org.apache.activemq.ActiveMQConnectionFactory
 import org.apache.activemq.broker.BrokerService
 
 import scala.concurrent.Future
+// #imports
 
 object JmsToFile extends App {
 
@@ -34,14 +36,17 @@ object JmsToFile extends App {
 
     // format: off
     // #jms-to-file
-    val jmsSource: Source[String, NotUsed] = JmsSource.textSource(
-      JmsSourceSettings(connectionFactory).withBufferSize(10).withQueue("test")
-    )
+    val jmsSource: Source[Message, NotUsed] =             // (1)
+      JmsSource(
+        JmsSourceSettings(connectionFactory).withBufferSize(10).withQueue("test")
+      )
 
-    val fileSink: Sink[ByteString, Future[IOResult]] = FileIO.toPath(Paths.get("target/out"))
+    val fileSink: Sink[ByteString, Future[IOResult]] =    // (2)
+      FileIO.toPath(Paths.get("target/out"))
 
     jmsSource
-      .map(ByteString(_))
+      .map(_.asInstanceOf[TextMessage].getText)           // (3)
+      .map(ByteString(_))                                 // (4)
       .runWith(fileSink)
     // #jms-to-file
     // format: on
