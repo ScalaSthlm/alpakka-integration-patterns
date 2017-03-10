@@ -11,6 +11,9 @@ val defaultParadoxSettings: Seq[Setting[_]] = Seq(
   paradoxTheme := Some(builtinParadoxTheme("generic")),
   paradoxProperties ++= Map(
     "version" -> version.value,
+    "AkkaVersion" -> Dependencies.AkkaVersion,
+    "AkkaHttpVersion" -> Dependencies.AkkaHttpVersion,
+    "AlpakkaVersion" -> Dependencies.AlpakkaVersion,
     "scala.binaryVersion" -> scalaBinaryVersion.value,
     "extref.akka-docs.base_url" -> s"http://doc.akka.io/docs/akka/${Dependencies.AkkaVersion}/%s.html",
     "extref.alpakka-docs.base_url" -> s"http://developer.lightbend.com/docs/api/alpakka/${Dependencies.AlpakkaVersion}/akka/stream/alpakka/%s.html",

@@ -1,6 +1,6 @@
 # JMS to File
 
-This example 
+### Example 
 
 - listens to the JMS queue "test" receiving `javax.jms.Message`s (1),
 - converts the JMS message to a `javax.jms.TextMessage` and extracts the text (3),
