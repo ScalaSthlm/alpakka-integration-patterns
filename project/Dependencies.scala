@@ -4,11 +4,14 @@ object Dependencies {
 
   val ScalaVersions = Seq("2.11.8", "2.12.1")
   val AkkaVersion = "2.4.17"
-  val AkkaHttpVersion = "10.0.3"
+  val AkkaStreamContribVersion = "0.6"
+  val AkkaHttpVersion = "10.0.4"
   val AlpakkaVersion = "0.6"
 
   val akkaStream = "com.typesafe.akka" %% "akka-stream" % AkkaVersion
-  val akkaStramTestkit = "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion
+  val akkaStreamTestkit = "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion
+
+  val akkaStreamContrib = "com.typesafe.akka" %% "akka-stream-contrib" % AkkaStreamContribVersion
 
   val akkaHttp = "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
   val akkaHttpXml = "com.typesafe.akka" %% "akka-http-xml" % AkkaHttpVersion
@@ -19,4 +22,14 @@ object Dependencies {
 
   val alpakkaJms = "com.lightbend.akka" %% "akka-stream-alpakka-jms" % AlpakkaVersion
   val alpakkaFiles = "com.lightbend.akka" %% "akka-stream-alpakka-file" % AlpakkaVersion
+
+  // https://mina.apache.org/ftpserver-project/downloads.html
+  val apacheFtp = "org.apache.ftpserver" % "ftpserver-core" % "1.1.0"
+
+  val logging = Seq(
+    "org.slf4j" % "log4j-over-slf4j" % "1.7.21", // MIT like: http://www.slf4j.org/license.html
+    "org.slf4j" % "slf4j-api" % "1.7.21", // MIT like: http://www.slf4j.org/license.html
+    "ch.qos.logback" % "logback-classic" % "1.1.7", // Eclipse Public License 1.0: http://logback.qos.ch/license.html
+    "ch.qos.logback" % "logback-core" % "1.1.7" // Eclipse Public License 1.0: http://logback.qos.ch/license.html
+  )
 }

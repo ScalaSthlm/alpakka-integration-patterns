@@ -3,8 +3,12 @@ lazy val alpakkaIntegrationPatterns = project
   .enablePlugins(PublishUnidoc)
   .aggregate()
 
+lazy val playground = project.in(file("playground"))
+  .enablePlugins(AutomateHeaderPlugin)
+
 lazy val jmsToFile = project.in(file("jms-to-file"))
   .enablePlugins(AutomateHeaderPlugin)
+  .dependsOn(playground)
 
 val Local = config("local")
 val defaultParadoxSettings: Seq[Setting[_]] = Seq(
@@ -12,6 +16,7 @@ val defaultParadoxSettings: Seq[Setting[_]] = Seq(
   paradoxProperties ++= Map(
     "version" -> version.value,
     "AkkaVersion" -> Dependencies.AkkaVersion,
+    "AkkaStreamContribVersion" -> Dependencies.AkkaStreamContribVersion,
     "AkkaHttpVersion" -> Dependencies.AkkaHttpVersion,
     "AlpakkaVersion" -> Dependencies.AlpakkaVersion,
     "scala.binaryVersion" -> scalaBinaryVersion.value,
