@@ -14,6 +14,22 @@ Scala
 Scala Imports
 : @@snip (../../../../../jms-to-file/src/main/scala/scalasthlm/jms/JmsToFile.scala) { #imports }
 
+### Example: Read text messages from JMS queue and create one file per message
+
+- listens to the JMS queue "test" receiving `javax.jms.Message`s (1),
+- converts the JMS message to a `javax.jms.TextMessage` and extracts the text (2),
+- converts incoming data to `akka.util.ByteString` (3),
+- combines the incoming data with a counter (4),
+- creates an intermediary stream writing the incoming data to a file using the counter 
+value to create unique file names (5). 
+
+Scala
+: @@snip (../../../../../jms-to-file/src/main/scala/scalasthlm/jms/JmsToOneFilePerMessage.scala) { #jms-to-one-file-per-message }
+
+
+Scala Imports
+: @@snip (../../../../../jms-to-file/src/main/scala/scalasthlm/jms/JmsToOneFilePerMessage.scala) { #imports }
+
 
 ### Example: Read text messages from JMS queue and send to web server
 

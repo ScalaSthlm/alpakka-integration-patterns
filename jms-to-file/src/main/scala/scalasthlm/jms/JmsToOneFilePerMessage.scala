@@ -1,20 +1,20 @@
 package scalasthlm.jms
+
 // #imports
 import java.nio.file.Paths
 import javax.jms.{Message, TextMessage}
 
-import akka.NotUsed
-import akka.stream.IOResult
 import akka.stream.alpakka.jms.JmsSourceSettings
 import akka.stream.alpakka.jms.scaladsl.JmsSource
 import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.util.ByteString
+import akka.{Done, NotUsed}
 
 import scala.concurrent.Future
 import scalasthlm.alpakka.playground.ActiveMqBroker
 // #imports
 
-object JmsToFile extends ReadFromJms with App {
+object JmsToOneFilePerMessage extends ReadFromJms with App {
 
   ActiveMqBroker.start()
 
@@ -32,21 +32,23 @@ object JmsToFile extends ReadFromJms with App {
                              "k")
 
   // format: off
-  // #jms-to-file
+  // #jms-to-one-file-per-message
   val jmsSource: Source[Message, NotUsed] = // (1)
     JmsSource(
       JmsSourceSettings(connectionFactory).withBufferSize(10).withQueue("test")
     )
 
-  val fileSink: Sink[ByteString, Future[IOResult]] = // (2)
-    FileIO.toPath(Paths.get("target/out.txt"))
-
-  val finished: Future[IOResult] =
-    jmsSource
-      .map(_.asInstanceOf[TextMessage].getText) // (3)
-      .map(ByteString(_)) // (4)
-      .runWith(fileSink)
-  // #jms-to-file
+  jmsSource
+    .map(_.asInstanceOf[TextMessage].getText)               // (2)
+    .map(ByteString(_))                                     // (3)
+    .zip(Source.fromIterator(() => Iterator.from(0)))       // (4)
+    .mapAsync(parallelism = 5) { case (byteStr, number) =>
+      Source                                                // (5)
+        .single(byteStr)
+        .runWith(FileIO.toPath(Paths.get(s"target/out-${number}.txt")))
+    }
+    .runWith(Sink.ignore)
+  // #jms-to-one-file-per-message
   // format: on
   wait(1)
   for {
