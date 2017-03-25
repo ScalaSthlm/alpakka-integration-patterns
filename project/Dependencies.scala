@@ -7,6 +7,7 @@ object Dependencies {
   val AkkaStreamContribVersion = "0.6"
   val AkkaHttpVersion = "10.0.4"
   val AlpakkaVersion = "0.6"
+  val AkkaKafkaVersion = "0.14"
 
   val akkaStream = "com.typesafe.akka" %% "akka-stream" % AkkaVersion
   val akkaStreamTestkit = "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion
@@ -22,6 +23,9 @@ object Dependencies {
 
   val alpakkaJms = "com.lightbend.akka" %% "akka-stream-alpakka-jms" % AlpakkaVersion
   val alpakkaFiles = "com.lightbend.akka" %% "akka-stream-alpakka-file" % AlpakkaVersion
+  val alpakkaFtp = "com.lightbend.akka" %% "akka-stream-alpakka-ftp" % AlpakkaVersion
+
+  val akkaKafka = "com.typesafe.akka" %% "akka-stream-kafka" % AkkaKafkaVersion
 
   // https://mina.apache.org/ftpserver-project/downloads.html
   val apacheFtp = "org.apache.ftpserver" % "ftpserver-core" % "1.1.0"

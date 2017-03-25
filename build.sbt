@@ -1,7 +1,9 @@
 lazy val alpakkaIntegrationPatterns = project
   .in(file("."))
   .enablePlugins(PublishUnidoc)
-  .aggregate()
+  .aggregate(
+    jmsToFile
+  )
 
 lazy val playground = project.in(file("playground"))
   .enablePlugins(AutomateHeaderPlugin)
