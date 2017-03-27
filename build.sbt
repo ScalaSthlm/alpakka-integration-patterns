@@ -1,6 +1,5 @@
 lazy val alpakkaIntegrationPatterns = project
   .in(file("."))
-  .enablePlugins(PublishUnidoc)
   .aggregate(
     jmsToFile
   )
@@ -34,8 +33,7 @@ val defaultParadoxSettings: Seq[Setting[_]] = Seq(
 )
 
 lazy val docs = project
-  .enablePlugins(ParadoxPlugin, NoPublish)
-  //.disablePlugins(BintrayPlugin)
+  .enablePlugins(ParadoxPlugin)
   .settings(
     name := "Alpakka Integration Patterns",
     inConfig(Compile)(defaultParadoxSettings),

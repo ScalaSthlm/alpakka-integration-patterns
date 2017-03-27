@@ -7,8 +7,7 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
 object Common extends AutoPlugin {
 
   val FileHeader = (HeaderPattern.cStyleBlockComment,
-       """
-         |""".stripMargin)
+       """""".stripMargin)
 
   override def trigger = allRequirements
 
