@@ -1,13 +1,18 @@
 lazy val alpakkaIntegrationPatterns = project
   .in(file("."))
   .aggregate(
-    jmsToFile
+    jmsToFile,
+    ftpSamples
   )
 
 lazy val playground = project.in(file("playground"))
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val jmsToFile = project.in(file("jms-to-file"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .dependsOn(playground)
+
+lazy val ftpSamples = project.in(file("ftp-samples"))
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(playground)
 
