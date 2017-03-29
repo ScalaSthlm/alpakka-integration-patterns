@@ -2,6 +2,10 @@ name := "playground"
 
 import Dependencies._
 
+// JMS is not available at Maven Central
+resolvers +=
+  Resolver.url("JBoss", url("https://repository.jboss.org/nexus/content/groups/public"))
+
 libraryDependencies ++= Seq(
   akkaHttp % Optional,
   "javax.jms" % "jms" % "1.1" % Optional,

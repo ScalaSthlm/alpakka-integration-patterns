@@ -9,6 +9,6 @@ import Dependencies._
 libraryDependencies ++= Seq(
   alpakkaJms,
   akkaHttp,
-  "javax.jms" % "jms-api" % "1.1-rev-1",
+  "javax.jms" % "jms" % "1.1",
   "org.apache.activemq" % "activemq-all" % "5.14.4"
 )
