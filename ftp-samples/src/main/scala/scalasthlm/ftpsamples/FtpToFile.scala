@@ -10,13 +10,13 @@ import akka.stream.ActorMaterializer
 import akka.stream.alpakka.ftp.RemoteFileSettings._
 import akka.stream.alpakka.ftp._
 import akka.stream.alpakka.ftp.scaladsl.Ftp
-import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.{Sink, Source}
 import com.google.common.jimfs.{Configuration, Jimfs}
 import org.apache.mina.util.AvailablePortFinder
 
 import scala.concurrent.duration.DurationInt
 import scalasthlm.alpakka.playground.FtpServerEmbedded
-import scalasthlm.alpakka.playground.filesystem.{FileSystemMock}
+import scalasthlm.alpakka.playground.filesystem.FileSystemMock
 // #imports
 
 object FtpToFile extends App {
@@ -46,7 +46,7 @@ object FtpToFile extends App {
       .ls("/", settings)
       .zip(Source.fromIterator(() => Iterator.from(1)))
       .filter { case (file, _) => file.isFile }
-      .runForeach {
+      .mapAsyncUnordered(parallelism = 5) {
         case (file, index) =>
           Source
             .single(s"file: ${file.name}")
@@ -57,6 +57,7 @@ object FtpToFile extends App {
             }
             .runForeach(println)
       }
+      .runWith(Sink.ignore)
     // #list-files
     // fo rmat: on
 
