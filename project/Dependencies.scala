@@ -6,7 +6,7 @@ object Dependencies {
   val AkkaVersion = "2.4.17"
   val AkkaStreamContribVersion = "0.6"
   val AkkaHttpVersion = "10.0.4"
-  val AlpakkaVersion = "0.6"
+  val AlpakkaVersion = "0.7"
   val AkkaKafkaVersion = "0.14"
 
   val akkaStream = "com.typesafe.akka" %% "akka-stream" % AkkaVersion
