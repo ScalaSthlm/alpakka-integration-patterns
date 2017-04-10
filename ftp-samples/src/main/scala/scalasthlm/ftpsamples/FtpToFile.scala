@@ -1,20 +1,19 @@
 package scalasthlm.ftpsamples
 // #imports
-import java.io.File
 import java.net.InetAddress
-import java.nio.file.{FileSystem, Files}
+import java.nio.file.{Files, Paths}
 
-import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.stream.alpakka.ftp.RemoteFileSettings._
-import akka.stream.alpakka.ftp._
 import akka.stream.alpakka.ftp.scaladsl.Ftp
-import akka.stream.scaladsl.{Sink, Source}
-import com.google.common.jimfs.{Configuration, Jimfs}
+import akka.stream.scaladsl.{FileIO, Sink}
+import akka.stream.{ActorMaterializer, IOResult}
 import org.apache.mina.util.AvailablePortFinder
 
+import scala.collection.immutable
+import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
+import scala.util.{Failure, Success}
 import scalasthlm.alpakka.playground.FtpServerEmbedded
 import scalasthlm.alpakka.playground.filesystem.FileSystemMock
 // #imports
@@ -35,33 +34,44 @@ object FtpToFile extends App {
     ftpFileSystem.putFileOnFtp("/home/anonymous", "hello.txt")
     ftpFileSystem.putFileOnFtp("/home/anonymous", "hello2.txt")
 
-    val settings = FtpSettings(
+    val ftpSettings = FtpSettings(
       InetAddress.getByName("localhost"),
       port
     )
 
-    // fo rmat: off
-    // #list-files
-    Ftp
-      .ls("/", settings)
-      .zip(Source.fromIterator(() => Iterator.from(1)))
-      .filter { case (file, _) => file.isFile }
-      .mapAsyncUnordered(parallelism = 5) {
-        case (file, index) =>
-          Source
-            .single(s"file: ${file.name}")
-            .concat {
-              Ftp
-                .fromPath(ftpFileSystem.fileSystem.getPath(file.path), settings)
-                .map(_.utf8String)
-            }
-            .runForeach(println)
+    val targetDir = Paths.get("target/")
+    // for mat: off
+    // #fetch-files
+    val fetchedFiles: Future[immutable.Seq[(String, IOResult)]] =
+      Ftp
+        .ls("/", ftpSettings)
+        .filter(ftpFile => ftpFile.isFile)
+        .mapAsyncUnordered(parallelism = 5) { ftpFile =>
+          val localPath = targetDir.resolve("." + ftpFile.path)
+          val dir = Files.createDirectories(localPath.getParent)
+          val future = Ftp
+            .fromPath(ftpFile.path, ftpSettings)
+            .runWith(FileIO.toPath(localPath))
+          future.map { ioResult =>
+            (ftpFile.path, ioResult)
+          }
+        }
+        .runWith(Sink.seq)
+    // #fetch-files
+    // format: on
+    fetchedFiles
+      .map { files =>
+        files.filter { case (_, r) => !r.wasSuccessful }
       }
-      .runWith(Sink.ignore)
-    // #list-files
-    // fo rmat: on
-
-    Thread.sleep(30.seconds.toMillis)
+      .onComplete {
+        case Success(errors) if errors.isEmpty =>
+          println("all files fetched.")
+        case Success(errors) =>
+          println(s"errors occured: ${errors.mkString("\n")}")
+        case Failure(exception) =>
+          println("The stream failed")
+      }
+    Thread.sleep(10.seconds.toMillis)
     actorSystem.terminate().onComplete { _ =>
       ftpServer.stop()
     }
