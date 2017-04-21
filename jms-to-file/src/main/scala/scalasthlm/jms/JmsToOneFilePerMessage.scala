@@ -2,15 +2,15 @@ package scalasthlm.jms
 
 // #imports
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption.{CREATE, TRUNCATE_EXISTING, WRITE}
 import javax.jms.{Message, TextMessage}
 
+import akka.NotUsed
 import akka.stream.alpakka.jms.JmsSourceSettings
 import akka.stream.alpakka.jms.scaladsl.JmsSource
 import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.util.ByteString
-import akka.{Done, NotUsed}
 
-import scala.concurrent.Future
 import scalasthlm.alpakka.playground.ActiveMqBroker
 // #imports
 
@@ -45,7 +45,8 @@ object JmsToOneFilePerMessage extends ReadFromJms with App {
     .mapAsync(parallelism = 5) { case (byteStr, number) =>
       Source                                                // (5)
         .single(byteStr)
-        .runWith(FileIO.toPath(Paths.get(s"target/out-${number}.txt")))
+        .runWith(FileIO.toPath(Paths.get(s"target/out-${number}.txt"),
+                               Set(WRITE, TRUNCATE_EXISTING, CREATE)))
     }
     .runWith(Sink.ignore)
   // #jms-to-one-file-per-message

@@ -1,6 +1,7 @@
 package scalasthlm.jms
 // #imports
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption._
 import javax.jms.{Message, TextMessage}
 
 import akka.NotUsed
@@ -39,7 +40,8 @@ object JmsToFile extends ReadFromJms with App {
     )
 
   val fileSink: Sink[ByteString, Future[IOResult]] = // (2)
-    FileIO.toPath(Paths.get("target/out.txt"))
+    FileIO.toPath(Paths.get("target/out.txt"),
+                  Set(WRITE, TRUNCATE_EXISTING, CREATE))
 
   val finished: Future[IOResult] =
     jmsSource

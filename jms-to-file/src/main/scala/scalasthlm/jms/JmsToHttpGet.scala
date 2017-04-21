@@ -1,7 +1,7 @@
 package scalasthlm.jms
 
 // #imports
-import javax.jms.{ConnectionFactory, Message, TextMessage}
+import javax.jms.{Message, TextMessage}
 
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
