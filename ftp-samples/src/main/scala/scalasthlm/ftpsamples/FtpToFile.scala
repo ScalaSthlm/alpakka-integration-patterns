@@ -4,7 +4,7 @@ import java.net.InetAddress
 import java.nio.file.{Files, Paths}
 
 import akka.actor.ActorSystem
-import akka.stream.alpakka.ftp.RemoteFileSettings._
+import akka.stream.alpakka.ftp.FtpSettings
 import akka.stream.alpakka.ftp.scaladsl.Ftp
 import akka.stream.scaladsl.{FileIO, Sink}
 import akka.stream.{ActorMaterializer, IOResult}
@@ -12,7 +12,6 @@ import org.apache.mina.util.AvailablePortFinder
 
 import scala.collection.immutable
 import scala.concurrent.Future
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 import scalasthlm.alpakka.playground.FtpServerEmbedded
 import scalasthlm.alpakka.playground.filesystem.FileSystemMock

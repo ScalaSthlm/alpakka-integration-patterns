@@ -4,6 +4,18 @@ lazy val alpakkaIntegrationPatterns = project
     jmsToFile,
     ftpSamples
   )
+  .settings(
+    onLoadMessage :=
+      """
+        |** Welcome to Alpakka Integration patterns! **
+        |
+        |Useful sbt tasks:
+        |
+        |  docs/local:paradox - builds documentation with locally
+        |    linked Scala API docs, which can be found at
+        |    docs/target/paradox/site/local
+      """.stripMargin
+  )
 
 lazy val playground = project.in(file("playground"))
   .enablePlugins(AutomateHeaderPlugin)
@@ -22,7 +34,6 @@ val defaultParadoxSettings: Seq[Setting[_]] = Seq(
   paradoxProperties ++= Map(
     "version" -> version.value,
     "AkkaVersion" -> Dependencies.AkkaVersion,
-    "AkkaStreamContribVersion" -> Dependencies.AkkaStreamContribVersion,
     "AkkaHttpVersion" -> Dependencies.AkkaHttpVersion,
     "AlpakkaVersion" -> Dependencies.AlpakkaVersion,
     "scala.binaryVersion" -> scalaBinaryVersion.value,

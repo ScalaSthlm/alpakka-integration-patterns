@@ -61,7 +61,7 @@ class WebServer extends HttpApp {
     * @see http://doc.akka.io/docs/akka-http/current/scala/http/routing-dsl/overview.html
     *      http://doc.akka.io/docs/akka-http/current/scala/http/routing-dsl/directives/alphabetically.html
     */
-  def route: Route =
+  override def routes: Route =
     pathSingleSlash {
       complete {
         println("Web server received GET /")

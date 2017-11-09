@@ -2,17 +2,14 @@ import sbt._, Keys._
 
 object Dependencies {
 
-  val ScalaVersions = Seq("2.11.8", "2.12.2")
-  val AkkaVersion = "2.5.1"
-  val AkkaStreamContribVersion = "0.6"
-  val AkkaHttpVersion = "10.0.6"
-  val AlpakkaVersion = "0.8"
+  val ScalaVersions = Seq("2.11.11", "2.12.4")
+  val AkkaVersion = "2.5.6"
+  val AkkaHttpVersion = "10.0.10"
+  val AlpakkaVersion = "0.14"
   val AkkaKafkaVersion = "0.15"
 
   val akkaStream = "com.typesafe.akka" %% "akka-stream" % AkkaVersion
   val akkaStreamTestkit = "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion
-
-  val akkaStreamContrib = "com.typesafe.akka" %% "akka-stream-contrib" % AkkaStreamContribVersion
 
   val akkaHttp = "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
   val akkaHttpXml = "com.typesafe.akka" %% "akka-http-xml" % AkkaHttpVersion

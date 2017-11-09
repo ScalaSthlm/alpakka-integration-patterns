@@ -18,7 +18,7 @@ class ReadFromJms {
 
   def enqueue(connectionFactory: ConnectionFactory)(msgs: String*): Unit = {
     val jmsSink: Sink[String, NotUsed] =
-      JmsSink(
+      JmsSink.textSink(
         JmsSinkSettings(connectionFactory).withQueue("test")
       )
     Source(msgs.toList).runWith(jmsSink)
