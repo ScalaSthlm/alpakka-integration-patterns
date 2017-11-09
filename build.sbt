@@ -11,20 +11,23 @@ lazy val alpakkaIntegrationPatterns = project
         |
         |Useful sbt tasks:
         |
-        |  docs/local:paradox - builds documentation with locally
+        |  docs/paradox - builds documentation with locally
         |    linked Scala API docs, which can be found at
-        |    docs/target/paradox/site/local
+        |    docs/target/paradox/site/main
       """.stripMargin
   )
 
-lazy val playground = project.in(file("playground"))
+lazy val playground = project
+  .in(file("playground"))
   .enablePlugins(AutomateHeaderPlugin)
 
-lazy val jmsToFile = project.in(file("jms-to-file"))
+lazy val jmsToFile = project
+  .in(file("jms-to-file"))
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(playground)
 
-lazy val ftpSamples = project.in(file("ftp-samples"))
+lazy val ftpSamples = project
+  .in(file("ftp-samples"))
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(playground)
 
@@ -49,17 +52,13 @@ val defaultParadoxSettings: Seq[Setting[_]] = Seq(
 )
 
 lazy val docs = project
-  .enablePlugins(ParadoxPlugin)
+  .enablePlugins(ParadoxPlugin, ParadoxSitePlugin, GhpagesPlugin)
   .settings(
     name := "Alpakka Integration Patterns",
-    inConfig(Compile)(defaultParadoxSettings),
-    ParadoxPlugin.paradoxSettings(Local),
-    inConfig(Local)(defaultParadoxSettings),
-    paradoxProperties in Local ++= Map(
-      // point API doc links to locally generated API docs
-    /*  "scaladoc.akka.stream.alpakka.base_url" -> rebase(
-        (baseDirectory in alpakka).value, "../../../../../"
-      )((sbtunidoc.Plugin.UnidocKeys.unidoc in alpakka in Compile).value.head).get
-*/
-    )
+    defaultParadoxSettings,
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/ScalaSthlm/alpakka-integration-patterns.git"),
+        "git@github.com:ScalaSthlm/alpakka-integration-patterns.git")),
+    git.remoteRepo := scmInfo.value.get.connection
   )
