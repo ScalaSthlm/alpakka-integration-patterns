@@ -11,24 +11,24 @@ lazy val alpakkaIntegrationPatterns = project
         |
         |Useful sbt tasks:
         |
-        |  docs/paradox - builds documentation with locally
-        |    linked Scala API docs, which can be found at
-        |    docs/target/paradox/site/main
+        |  previewSite - opens the site in web browser
+        |    (sbt-site plugin)
+        |
+        |  docs/ghpagesPushSite - creates the site in gh-pages branch
+        |    and pushes it to Github
+        |    (sbt-ghpages plugin)
       """.stripMargin
   )
 
 lazy val playground = project
   .in(file("playground"))
-  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val jmsToFile = project
   .in(file("jms-to-file"))
-  .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(playground)
 
 lazy val ftpSamples = project
   .in(file("ftp-samples"))
-  .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(playground)
 
 val Local = config("local")
@@ -56,9 +56,5 @@ lazy val docs = project
   .settings(
     name := "Alpakka Integration Patterns",
     defaultParadoxSettings,
-    scmInfo := Some(
-      ScmInfo(
-        url("https://github.com/ScalaSthlm/alpakka-integration-patterns.git"),
-        "git@github.com:ScalaSthlm/alpakka-integration-patterns.git")),
     git.remoteRepo := scmInfo.value.get.connection
   )
