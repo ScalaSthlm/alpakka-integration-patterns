@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
 
 <head>
-<title>FTP samples · Alpakka Integration Patterns</title>
+<title>CSV samples · Alpakka Integration Patterns</title>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content='Alpakka Integration Patterns'/>
@@ -30,15 +30,16 @@
 <span class="home-icon">⌂</span>Alpakka Integration Patterns
 </a>
 <div class="version-number">
-0.0.1+11-cb496a5c+20171109-1150
+2017.11
 </div>
 </div>
 <div class="nav-toc">
 <ul>
-  <li><a href="../patterns/index.html" class="page">Patterns</a>
+  <li><a href="../examples/index.html" class="page">Self-contained examples</a>
   <ul>
-    <li><a href="../patterns/jms-reading.html" class="page">Reading from JMS</a></li>
-    <li><a href="../patterns/ftp-samples.html" class="active page">FTP samples</a></li>
+    <li><a href="../examples/jms-reading.html" class="page">Reading from JMS</a></li>
+    <li><a href="../examples/ftp-samples.html" class="page">FTP samples</a></li>
+    <li><a href="../examples/csv-samples.html" class="active page">CSV samples</a></li>
   </ul></li>
   <li><a href="../resources.html" class="page">Resources</a>
   <ul>
@@ -79,15 +80,16 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>Alpakka Integration Patterns
 </a>
 <div class="version-number">
-0.0.1+11-cb496a5c+20171109-1150
+2017.11
 </div>
 </div>
 <div class="nav-toc">
 <ul>
-  <li><a href="../patterns/index.html" class="page">Patterns</a>
+  <li><a href="../examples/index.html" class="page">Self-contained examples</a>
   <ul>
-    <li><a href="../patterns/jms-reading.html" class="page">Reading from JMS</a></li>
-    <li><a href="../patterns/ftp-samples.html" class="active page">FTP samples</a></li>
+    <li><a href="../examples/jms-reading.html" class="page">Reading from JMS</a></li>
+    <li><a href="../examples/ftp-samples.html" class="page">FTP samples</a></li>
+    <li><a href="../examples/csv-samples.html" class="active page">CSV samples</a></li>
   </ul></li>
   <li><a href="../resources.html" class="page">Resources</a>
   <ul>
@@ -111,8 +113,8 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <div class="nav-breadcrumbs">
 <ul>
   <li><a href="../index.html">Alpakka Integration Patterns</a></li>
-  <li><a href="../patterns/index.html">Patterns</a></li>
-  <li>FTP samples</li>
+  <li><a href="../examples/index.html">Self-contained examples</a></li>
+  <li>CSV samples</li>
 </ul>
 </div>
 </div>
@@ -120,54 +122,64 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 
 <div class="page-content row">
 <div class="small-12 large-9 column" id="docs">
-<h1><a href="#ftp-samples" name="ftp-samples" class="anchor"><span class="anchor-link"></span></a>FTP samples</h1>
-<h3><a href="#example-copy-all-files-from-an-ftp-server-to-local-files" name="example-copy-all-files-from-an-ftp-server-to-local-files" class="anchor"><span class="anchor-link"></span></a>Example: Copy all files from an FTP server to local files</h3>
+<h1><a href="#csv-samples" name="csv-samples" class="anchor"><span class="anchor-link"></span></a>CSV samples</h1>
+<h3><a href="#example-fetch-csv-from-internet-and-publish-the-data-as-json" name="example-fetch-csv-from-internet-and-publish-the-data-as-json" class="anchor"><span class="anchor-link"></span></a>Example: Fetch CSV from Internet and publish the data as JSON</h3>
+<p>This example uses <a href="http://doc.akka.io/docs/akka-http/10.0.10/scala/http/client-side/connection-level.html#opening-http-connections">Akka HTTP to send the HTTP request</a> and Akka HTTPs primary JSON support via <a href="http://doc.akka.io/docs/akka-http/10.0.10/scala/http/common/json-support.html#spray-json-support">Spray JSON</a> to convert the map into a JSON structure. </p>
 <ul>
-  <li>list FTP server contents (1),</li>
-  <li>just bother about file entries (2),</li>
-  <li>for each file prepare for awaiting <code>Future</code> results ignoring the stream order (3),</li>
-  <li>run a new stream copying the file contents to a local file (4),</li>
-  <li>combine the filename and the copying result (5),</li>
-  <li>collect all filenames with results into a sequence (6)</li>
+  <li>(1) trigger an HTTP request every 30 seconds,</li>
+  <li>(2) send it to web server,</li>
+  <li>(3) continue with the response body as a stream of <code>ByteString</code>,</li>
+  <li>(4) scan the stream for CSV lines,</li>
+  <li>(5) convert the CSV lines into maps with the header line as keys,</li>
+  <li>(6) local logic to clean the data and convert values to Strings,</li>
+  <li>(7) convert the maps to JSON with Spray JSON from Akka HTTP</li>
 </ul>
 <dl>
   <dt>Scala</dt>
   <dd>
-  <pre class="prettyprint"><code class="language-scala">val ftpSettings = FtpSettings(InetAddress.getByName(&quot;localhost&quot;), port)
-
-  Ftp
-    .ls(&quot;/&quot;, ftpSettings)                                    // (1)
-    .filter(ftpFile =&gt; ftpFile.isFile)                       // (2)
-    .mapAsyncUnordered(parallelism = 5) { ftpFile =&gt;         // (3)
-      val localPath = targetDir.resolve(&quot;.&quot; + ftpFile.path)
-      val dir = Files.createDirectories(localPath.getParent)
-      val fetchFile: Future[IOResult] = Ftp
-        .fromPath(ftpFile.path, ftpSettings)                
-        .runWith(FileIO.toPath(localPath))                   // (4)
-      fetchFile.map { ioResult =&gt;                            // (5)
-        (ftpFile.path, ioResult)
-      }
-    }
-    .runWith(Sink.seq)                                       // (6)</code></pre></dd>
+  <pre class="prettyprint"><code class="language-scala">Source                                              // stream element type
+  .tick(1.seconds, 30.seconds, httpRequest)         //: HttpRequest (1)
+  .via(Http().outgoingConnection(&quot;www.nasdaq.com&quot;)) //: HttpResponse (2)
+  .flatMapConcat(extractEntityData)                 //: ByteString (3)
+  .via(CsvParsing.lineScanner())                    //: List[ByteString] (4)
+  .via(CsvToMap.toMap())                            //: Map[String, ByteString] (5)
+  .map(cleanseCsvData)                              //: Map[String, String] (6)
+  .map(toJson)                                      //: JsValue (7)</code></pre></dd>
 </dl>
+<h3><a href="#helper-code" name="helper-code" class="anchor"><span class="anchor-link"></span></a>Helper code</h3>
 <dl>
-  <dt>Scala Imports</dt>
+  <dt>Scala</dt>
   <dd>
-  <pre class="prettyprint"><code class="language-scala">import java.net.InetAddress
-import java.nio.file.{Files, Paths}
+  <pre class="prettyprint"><code class="language-scala">val httpRequest = HttpRequest(uri = &quot;/screening/companies-by-name.aspx?exchange=NASDAQ&amp;render=download&quot;)
 
-import akka.actor.ActorSystem
-import akka.stream.alpakka.ftp.FtpSettings
-import akka.stream.alpakka.ftp.scaladsl.Ftp
-import akka.stream.scaladsl.{FileIO, Sink}
-import akka.stream.{ActorMaterializer, IOResult}
-import org.apache.mina.util.AvailablePortFinder
+def extractEntityData(response: HttpResponse): Source[ByteString, _] =
+  response match {
+    case HttpResponse(OK, _, entity, _) =&gt; entity.dataBytes
+    case notOkResponse =&gt;
+      Source.failed(new RuntimeException(s&quot;illegal response $notOkResponse&quot;))
+  }
 
-import scala.collection.immutable
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
-import scalasthlm.alpakka.playground.FtpServerEmbedded
-import scalasthlm.alpakka.playground.filesystem.FileSystemMock</code></pre></dd>
+def cleanseCsvData(csvData: Map[String, ByteString]): Map[String, String] =
+  csvData
+    .filterNot { case (key, _) =&gt; key.isEmpty }
+    .mapValues(_.utf8String)
+
+def toJson(map: Map[String, String])(
+    implicit jsWriter: JsonWriter[Map[String, String]]): JsValue = jsWriter.write(map)</code></pre></dd>
+</dl>
+<h3><a href="#imports" name="imports" class="anchor"><span class="anchor-link"></span></a>Imports</h3>
+<dl>
+  <dt>Scala</dt>
+  <dd>
+  <pre class="prettyprint"><code class="language-scala">import akka.http.scaladsl._
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
+import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
+import akka.stream.scaladsl.{Keep, Sink, Source}
+import akka.util.ByteString
+import spray.json.{DefaultJsonProtocol, JsValue, JsonWriter}
+
+import scala.concurrent.duration.DurationInt</code></pre></dd>
 </dl>
 <h3><a href="#running-the-example-code" name="running-the-example-code" class="anchor"><span class="anchor-link"></span></a>Running the example code</h3>
 <p>This example is contained in a stand-alone runnable main, it can be run  from <code>sbt</code> like this:</p>
@@ -175,11 +187,11 @@ import scalasthlm.alpakka.playground.filesystem.FileSystemMock</code></pre></dd>
   <dt>Scala</dt>
   <dd>
   <pre><code>sbt
-&gt; ftpSamples/run
+&gt; csvSamples/run
 </code></pre></dd>
 </dl>
 <div class="source-github">
-The source code for this page can be found <a href="https://github.com/ScalaSthlm/alpakka-integration-patterns.git/tree/master/docs/src/main/paradox/patterns/ftp-samples.md">here</a>.
+The source code for this page can be found <a href="https://github.com/ScalaSthlm/alpakka-integration-patterns/tree/master/docs/src/main/paradox/examples/csv-samples.md">here</a>.
 </div>
 
 <div class="nav-next">
@@ -192,10 +204,12 @@ The source code for this page can be found <a href="https://github.com/ScalaSthl
 <div class="nav-title">On this page:</div>
 <div class="nav-toc">
 <ul>
-  <li><a href="../patterns/ftp-samples.html#ftp-samples" class="header">FTP samples</a>
+  <li><a href="../examples/csv-samples.html#csv-samples" class="header">CSV samples</a>
   <ul>
-    <li><a href="../patterns/ftp-samples.html#example-copy-all-files-from-an-ftp-server-to-local-files" class="header">Example: Copy all files from an FTP server to local files</a></li>
-    <li><a href="../patterns/ftp-samples.html#running-the-example-code" class="header">Running the example code</a></li>
+    <li><a href="../examples/csv-samples.html#example-fetch-csv-from-internet-and-publish-the-data-as-json" class="header">Example: Fetch CSV from Internet and publish the data as JSON</a></li>
+    <li><a href="../examples/csv-samples.html#helper-code" class="header">Helper code</a></li>
+    <li><a href="../examples/csv-samples.html#imports" class="header">Imports</a></li>
+    <li><a href="../examples/csv-samples.html#running-the-example-code" class="header">Running the example code</a></li>
   </ul></li>
 </ul>
 </div>
