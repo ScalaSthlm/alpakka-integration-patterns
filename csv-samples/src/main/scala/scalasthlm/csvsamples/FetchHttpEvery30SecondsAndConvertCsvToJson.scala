@@ -18,7 +18,7 @@ object FetchHttpEvery30SecondsAndConvertCsvToJson
 
   // format: off
   // #helper
-  val httpRequest = HttpRequest(uri = "/screening/companies-by-name.aspx?exchange=NASDAQ&render=download")
+  val httpRequest = HttpRequest(uri = "http://www.nasdaq.com/screening/companies-by-name.aspx?exchange=NASDAQ&render=download")
 
   def extractEntityData(response: HttpResponse): Source[ByteString, _] =
     response match {
@@ -42,7 +42,7 @@ object FetchHttpEvery30SecondsAndConvertCsvToJson
     // #sample
     Source                                              // stream element type
       .tick(1.seconds, 30.seconds, httpRequest)         //: HttpRequest (1)
-      .via(Http().outgoingConnection("www.nasdaq.com")) //: HttpResponse (2)
+      .mapAsync(1)(Http().singleRequest(_))             //: HttpResponse (2)
       .flatMapConcat(extractEntityData)                 //: ByteString (3)
       .via(CsvParsing.lineScanner())                    //: List[ByteString] (4)
       .via(CsvToMap.toMap())                            //: Map[String, ByteString] (5)
