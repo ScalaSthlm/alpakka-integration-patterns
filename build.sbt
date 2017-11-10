@@ -23,6 +23,9 @@ lazy val alpakkaIntegrationPatterns = project
 lazy val playground = project
   .in(file("playground"))
 
+lazy val csvSamples = project
+  .in(file("csv-samples"))
+
 lazy val jmsToFile = project
   .in(file("jms-to-file"))
   .dependsOn(playground)

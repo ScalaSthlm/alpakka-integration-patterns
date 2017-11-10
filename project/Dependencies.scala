@@ -13,11 +13,13 @@ object Dependencies {
 
   val akkaHttp = "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
   val akkaHttpXml = "com.typesafe.akka" %% "akka-http-xml" % AkkaHttpVersion
+  val akkaHttpSprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion
 
   val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1" % Test // ApacheV2
   val junitInterface = "com.novocode" % "junit-interface" % "0.11" % Test // BSD-style
   val junit = "junit" % "junit" % "4.12" % Test // Eclipse Public License 1.0
 
+  val alpakkaCsv = "com.lightbend.akka" %% "akka-stream-alpakka-csv" % AlpakkaVersion
   val alpakkaJms = "com.lightbend.akka" %% "akka-stream-alpakka-jms" % AlpakkaVersion
   val alpakkaFiles = "com.lightbend.akka" %% "akka-stream-alpakka-file" % AlpakkaVersion
   val alpakkaFtp = "com.lightbend.akka" %% "akka-stream-alpakka-ftp" % AlpakkaVersion

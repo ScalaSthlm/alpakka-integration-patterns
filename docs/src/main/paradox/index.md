@@ -14,7 +14,7 @@ Please @ref[contribute](contributing.md) to this effort.
 
 @@@ index
 
-* [Patterns](patterns/index.md)
+* [Examples](examples/index.md)
 * [Resources](resources.md)
 * [About](about.md)
 
