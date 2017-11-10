@@ -30,7 +30,7 @@
 <span class="home-icon">⌂</span>Alpakka Integration Patterns
 </a>
 <div class="version-number">
-2017.11
+2017.11+3-37d257aa+20171110-1131
 </div>
 </div>
 <div class="nav-toc">
@@ -80,7 +80,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>Alpakka Integration Patterns
 </a>
 <div class="version-number">
-2017.11
+2017.11+3-37d257aa+20171110-1131
 </div>
 </div>
 <div class="nav-toc">
@@ -139,7 +139,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   <dd>
   <pre class="prettyprint"><code class="language-scala">Source                                              // stream element type
   .tick(1.seconds, 30.seconds, httpRequest)         //: HttpRequest (1)
-  .via(Http().outgoingConnection(&quot;www.nasdaq.com&quot;)) //: HttpResponse (2)
+  .mapAsync(1)(Http().singleRequest(_))             //: HttpResponse (2)
   .flatMapConcat(extractEntityData)                 //: ByteString (3)
   .via(CsvParsing.lineScanner())                    //: List[ByteString] (4)
   .via(CsvToMap.toMap())                            //: Map[String, ByteString] (5)
@@ -150,7 +150,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <dl>
   <dt>Scala</dt>
   <dd>
-  <pre class="prettyprint"><code class="language-scala">val httpRequest = HttpRequest(uri = &quot;/screening/companies-by-name.aspx?exchange=NASDAQ&amp;render=download&quot;)
+  <pre class="prettyprint"><code class="language-scala">val httpRequest = HttpRequest(uri = &quot;http://www.nasdaq.com/screening/companies-by-name.aspx?exchange=NASDAQ&amp;render=download&quot;)
 
 def extractEntityData(response: HttpResponse): Source[ByteString, _] =
   response match {
