@@ -41,6 +41,7 @@ val defaultParadoxSettings: Seq[Setting[_]] = Seq(
     "version" -> version.value,
     "AkkaVersion" -> Dependencies.AkkaVersion,
     "AkkaHttpVersion" -> Dependencies.AkkaHttpVersion,
+    "AkkaKafkaVersion" -> Dependencies.AkkaKafkaVersion,
     "AlpakkaVersion" -> Dependencies.AlpakkaVersion,
     "scala.binaryVersion" -> scalaBinaryVersion.value,
     "extref.akka-docs.base_url" -> s"http://doc.akka.io/docs/akka/${Dependencies.AkkaVersion}/%s",

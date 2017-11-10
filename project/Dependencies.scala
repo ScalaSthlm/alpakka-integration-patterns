@@ -6,7 +6,7 @@ object Dependencies {
   val AkkaVersion = "2.5.6"
   val AkkaHttpVersion = "10.0.10"
   val AlpakkaVersion = "0.14"
-  val AkkaKafkaVersion = "0.15"
+  val AkkaKafkaVersion = "0.17"
 
   val akkaStream = "com.typesafe.akka" %% "akka-stream" % AkkaVersion
   val akkaStreamTestkit = "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion
@@ -26,8 +26,12 @@ object Dependencies {
 
   val akkaKafka = "com.typesafe.akka" %% "akka-stream-kafka" % AkkaKafkaVersion
 
+  // https://github.com/manub/scalatest-embedded-kafka/tags
+  val embeddedKafka = "net.manub" %% "scalatest-embedded-kafka" % "1.0.0"
+
+
   // https://mina.apache.org/ftpserver-project/downloads.html
-  val apacheFtp = "org.apache.ftpserver" % "ftpserver-core" % "1.1.0"
+  val apacheFtp = "org.apache.ftpserver" % "ftpserver-core" % "1.1.1"
 
   val logging = Seq(
     "org.slf4j" % "log4j-over-slf4j" % "1.7.21", // MIT like: http://www.slf4j.org/license.html
